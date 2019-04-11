@@ -1,15 +1,105 @@
 from room import Room
 from player import Player
 from world import World
+from queue import Queue
+
 
 import random
 
-def get_traversal_path(player, room_graph):
-    unexplored_room_graph = room_graph.copy()
+def get_reverse_direction(direction):
+    if direction.lower() == 'n':
+        return 's'
+    elif direction.lower() == 's':
+        return 'n'
+    elif direction.lower() == 'e':
+        return 'w'
+    elif direction.lower() == 'w':
+        return 'e'
+
+def create_unexplored_room_graph(room_graph):
+    unexplored_room_graph = {}
+    # Pass by value
+    for key,value in room_graph.items():
+        unexplored_room_graph[key] = dict(value[1])
+
     for room in unexplored_room_graph:
-        for path in unexplored_room_graph[room][1]:
-            unexplored_room_graph[room][1][path] = '?'
+        for path in unexplored_room_graph[room]:
+            unexplored_room_graph[room][path] = '?'
     return unexplored_room_graph
+
+def create_room_graph_map(room_graph):
+    room_graph_map = {}
+    # Pass by value
+    for key,value in room_graph.items():
+        room_graph_map[key] = dict(value[1])
+
+    return room_graph_map
+
+def get_traversal_path(player, room_graph):
+    """ Notes:
+        player.currentRoom.getExits() -> available paths (e.g.: ['n','s','e','w'])
+        player.currentRoom.getRoomInDirection(path) -> looks ahead to see what the next room is
+        player.currentRoom.getRoomInDirection(path).id -> looks ahead to see what the next room number is (e.g.: 2)
+    """
+
+    # setup
+    unexplored_room_graph = create_unexplored_room_graph(room_graph)
+    room_graph_map = create_room_graph_map(room_graph)
+    # explored_room_graph = room_graph... without the coordinates
+    rooms_explored = set() # starting room
+    rooms_still_unexplored = Queue()
+    travel_paths = [] # used for keeping track of how we explored all 500 rooms
+    print(room_graph) #
+    print(unexplored_room_graph) #
+    print(room_graph_map) #
+
+    # Pseudo Coded Solution
+    # while rooms_explored != len(room_graph):
+    #   current_room_id = player.currentRoom.id
+    #   get number of unexplored paths in current room
+    #   if current_room_id in rooms_explored:
+    #       paths_to_unexplored_room = use bfs search to get paths from current room to last unexplored room in the rooms_still_unexplored queue
+    #           in order of [current room ... rooms_still_unexplored[last room]]
+    #           # Note: pass graph without '?' to get the shortest possible path to end room.
+    #       move_path_index = 0
+    #       reverse_path = ''
+    #       unexplored_end_room_id = rooms_still_unexplored.storage[-1]
+    #       while current_room_id in rooms_explored:
+    #           # Note: if an unexplored/semi-explored room is entered during the traversal...
+    #             break out of the loop and start exploring from this room
+    #           reverse_path = get_reverse_direction(paths_to_unexplored_room[move_path_index])
+    #           travel_paths.append(paths_to_unexplored_room[move_path_index])
+    #           player.travel(paths_to_unexplored_room[move_path_index])
+    #           current_room_id = player.currentRoom.id
+    #           move_path_index += 1
+    #       convert/change previous path for current room from '?' to previous room id(use reverse_direction(current_path) and current_room_id)
+    #       if current_room_id == unexplored_end_room_id AND current room does NOT have any has '?'s:
+    #           rooms_explored.append(player.currentRoom.id)
+    #           rooms_still_unexplored.dequeue()
+    #   elif number of unexplored paths == 1:
+    #       if player.currentRoom.id in rooms_still_unexplored:
+    #           rooms_still_unexplored.dequeue()
+    #       selected_path = only availble path that has not yet been explored
+    #       Get reverse path from selected_path (use get_reverse_direction(selected_path))
+    #       convert/change selected path for current room from '?' to next room id(use player.currentRoom.getRoomInDirection(selected_path).id)
+    #       rooms_explored.add(current_room_id)
+    #       travel_paths.append(selected_path)
+    #       player.travel(selected_path)
+    #       convert/change previous path for current room from '?' to previous room id(use reverse_direction(current_path) and current_room_id)
+    #       if current room (inside next room) all exits have been explored:
+    #           rooms_explored.add(player.currentRoom.id)
+    #   elif number of unexplored paths >1:
+    #       Get/Select ONE Path in the order of w,n,e,s (until available unexplored path is found) # may later want to randomize this
+    #       Get reverse path from selected_path (use get_reverse_direction(selected_path))
+    #       convert/change selected path for current room from '?' to next room id(use player.currentRoom.getRoomInDirection(selected_path).id)
+    #       if player.currentRoom.id not in rooms_still_unexplored:
+    #           append room(id only) from current room to the rooms_still_unexplored queue
+    #       travel_paths.append(selected_path)
+    #       player.travel(selected_path)
+    #       convert/change previous path for current room from '?' to previous room id(use reverse_direction(current_path) and current_room_id)
+    #       if current room (inside next room) all exits have been explored:
+    #           rooms_explored.add(player.currentRoom.id)
+    return travel_paths
 
 
 # Load world
