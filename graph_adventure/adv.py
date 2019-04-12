@@ -129,10 +129,6 @@ def get_traversal_path(player, room_graph):
     rooms_explored = set() # starting room
     rooms_still_unexplored = Stack() #change to stack later and see if it makes a difference...
     travel_directions = [] # used for keeping track of how we explored all 500 rooms
-    print(room_graph) #
-    print(unexplored_room_graph) #
-    print(room_graph_map) #
-    print()
 
     """ Use line(s) to test bfs
     # test_paths = room_graph_bfs(room_graph_map, 6, 4)
@@ -151,10 +147,7 @@ def get_traversal_path(player, room_graph):
 
     # Pseudo Coded Solution
     # while rooms_explored != len(room_graph):
-    c = 0
     while len(rooms_explored) != len(room_graph):
-        c += 1
-        print(c)
     #   current_room_id = player.currentRoom.id
         current_room_id = player.currentRoom.id
     #   get directions only pertaining to rooms with a '?'
@@ -191,7 +184,7 @@ def get_traversal_path(player, room_graph):
     #           rooms_explored.add(current_room_id)
                 rooms_explored.add(current_room_id)
     #           rooms_still_unexplored.remove()
-                rooms_still_unexplored.remove()
+                rooms_still_unexplored.remove(current_room_id)
     #       elif current_room_id != unexplored_room AND current room ONLY HAS ONE '?'s:
             elif current_room_id != unexplored_room and get_num_of_room_unexplored_directions(unexplored_room_graph[player.currentRoom.id]) == 1:
     #           rooms_still_unexplored.push(current_room_id)
@@ -201,7 +194,7 @@ def get_traversal_path(player, room_graph):
     #       if player.currentRoom.id in rooms_still_unexplored:
             if player.currentRoom.id in rooms_still_unexplored.storage: # ----------- not yet tested -----------
     #           remove the last room in rooms_still_unexplored
-                rooms_still_unexplored.remove()
+                rooms_still_unexplored.remove(player.currentRoom.id)
     #       selected_direction = only availble direction that has not yet been explored
             selected_direction = unexplored_directions[0]
     #       Get reverse direction from selected_direction (use get_reverse_direction(selected_direction))
@@ -222,6 +215,9 @@ def get_traversal_path(player, room_graph):
             if get_num_of_room_unexplored_directions(unexplored_room_graph[player.currentRoom.id]) == 0:
     #           rooms_explored.add(player.currentRoom.id)
                 rooms_explored.add(player.currentRoom.id)
+                if player.currentRoom.id in rooms_still_unexplored.storage:
+                    # rooms_still_unexplored.remove(player.currentRoom.id)
+                    rooms_still_unexplored.remove(player.currentRoom.id)
     #   elif number of unexplored directions >1:
         elif len(unexplored_directions) > 1:
     #       Get/Select ONE Direction in the order of w,n,e,s (until available unexplored direction is found) # may later want to randomize this
@@ -266,25 +262,25 @@ player = Player("Name", world.startingRoom)
 
 
 # FILL THIS IN
-traversalPath = ['n', 'n'] # First room/test
 traversalPath = get_traversal_path(player, room_graph)
-print('solution:')
-print(len(traversalPath)) # remove line
+# print('solution:')
+# print(traversalPath)
+# print('moves = ', len(traversalPath))
 
 
 # TRAVERSAL TEST
-# visited_rooms = set()
-# player.currentRoom = world.startingRoom
-# visited_rooms.add(player.currentRoom)
-# for move in traversalPath:
-#     player.travel(move)
-#     visited_rooms.add(player.currentRoom)
+visited_rooms = set()
+player.currentRoom = world.startingRoom
+visited_rooms.add(player.currentRoom)
+for move in traversalPath:
+    player.travel(move)
+    visited_rooms.add(player.currentRoom)
 
-# if len(visited_rooms) == len(room_graph):
-#     print(f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
-# else:
-#     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
-#     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
+if len(visited_rooms) == len(room_graph):
+    print(f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
+else:
+    print("TESTS FAILED: INCOMPLETE TRAVERSAL")
+    print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
 
 
 

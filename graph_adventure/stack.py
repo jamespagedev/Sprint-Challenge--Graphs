@@ -14,10 +14,10 @@ class Stack:
             return self.storage.pop()
         return None
 
-    def remove(self):
+    def remove(self, room_id):
         if self.size > 0:
             self.size -= 1
-            del self.storage[-1]
+            del self.storage[self.storage.index(room_id)]
 
     def len(self):
         return self.size
