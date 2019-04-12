@@ -94,17 +94,17 @@ def get_room_unexplored_directions(room):
     s_added = False
 
     for num in room:
-        if 'n' in room and room['n'] == '?' and not w_added:
-            unexplored_directions.append('n')
-            w_added = True
-        elif 'e' in room and room['e'] == '?' and not n_added:
-            unexplored_directions.append('e')
-            n_added = True
-        elif 's' in room and room['s'] == '?' and not e_added:
-            unexplored_directions.append('s')
-            e_added = True
-        elif 'w' in room and room['w'] == '?' and not s_added:
+        if 'w' in room and room['w'] == '?' and not w_added:
             unexplored_directions.append('w')
+            w_added = True
+        elif 'n' in room and room['n'] == '?' and not n_added:
+            unexplored_directions.append('n')
+            n_added = True
+        elif 'e' in room and room['e'] == '?' and not e_added:
+            unexplored_directions.append('e')
+            e_added = True
+        elif 's' in room and room['s'] == '?' and not s_added:
+            unexplored_directions.append('s')
             s_added = True
     return unexplored_directions
 
@@ -114,6 +114,13 @@ def get_num_of_room_unexplored_directions(room):
         if room[direction] == '?':
             num_unexplored_directions += 1
     return num_unexplored_directions
+
+def get_shortest_traversal_path(player, world, unexplored_directions):
+    if len(unexplored_directions) == 0:
+        return ''
+    elif len(unexplored_directions) == 1:
+        return unexplored_directions[0]
+    return unexplored_directions[0]
 
 def get_traversal_path(player, room_graph):
     """ Notes:
@@ -151,8 +158,8 @@ def get_traversal_path(player, room_graph):
     #   current_room_id = player.currentRoom.id
         current_room_id = player.currentRoom.id
     #   get directions only pertaining to rooms with a '?'
-    #       append array in order of n, e, s, w
         unexplored_directions = get_room_unexplored_directions(unexplored_room_graph[current_room_id]) # one-dimensional list (e.g.: ['n''s'])
+        selected_direction = get_shortest_traversal_path(player, dict(unexplored_room_graph), unexplored_directions)
     #   if current_room_id in rooms_explored:
         if current_room_id in rooms_explored:
     #       unexplored_room = get latest unexplored room
@@ -192,11 +199,11 @@ def get_traversal_path(player, room_graph):
     #   elif number of unexplored directions == 1:
         elif len(unexplored_directions) == 1:
     #       if player.currentRoom.id in rooms_still_unexplored:
-            if player.currentRoom.id in rooms_still_unexplored.storage: # ----------- not yet tested -----------
+            if player.currentRoom.id in rooms_still_unexplored.storage:
     #           remove the last room in rooms_still_unexplored
                 rooms_still_unexplored.remove(player.currentRoom.id)
     #       selected_direction = only availble direction that has not yet been explored
-            selected_direction = unexplored_directions[0]
+            # selected_direction = unexplored_directions[0] # this is now pre-defined when getting the shortest traversal path
     #       Get reverse direction from selected_direction (use get_reverse_direction(selected_direction))
             reverse_direction = get_reverse_direction(selected_direction)
     #       convert/change selected direction for current room from '?'...
@@ -221,7 +228,7 @@ def get_traversal_path(player, room_graph):
     #   elif number of unexplored directions >1:
         elif len(unexplored_directions) > 1:
     #       Get/Select ONE Direction in the order of w,n,e,s (until available unexplored direction is found) # may later want to randomize this
-            selected_direction = unexplored_directions[0] # may later want to randomize this
+            # selected_direction = unexplored_directions[0] # we are using a method to get the shortest traversal path to get back to this room
     #       Get reverse direction from selected_direction (use get_reverse_direction(selected_direction))
             reverse_direction = get_reverse_direction(selected_direction)
     #       convert/change selected direction for current room from '?'...
@@ -242,6 +249,9 @@ def get_traversal_path(player, room_graph):
             if '?' not in unexplored_room_graph[player.currentRoom.id].values():
     #           rooms_explored.add(player.currentRoom.id)
                 rooms_explored.add(player.currentRoom.id)
+                if player.currentRoom.id in rooms_still_unexplored.storage:
+                    # rooms_still_unexplored.remove(player.currentRoom.id)
+                    rooms_still_unexplored.remove(player.currentRoom.id)
     return travel_directions
 
 
