@@ -10,10 +10,10 @@ class World:
         self.gridSize = 0
     def loadGraph(self, roomGraph):
         numRooms = len(roomGraph)
-        rooms = [None] * numRooms
+        # rooms = [None] * numRooms # dead code
         gridSize = 1
         for i in range(0, numRooms):
-            x = roomGraph[i][0][0]
+            # x = roomGraph[i][0][0] # dead code
             gridSize = max(gridSize, roomGraph[i][0][0], roomGraph[i][0][1])
             self.rooms[i] = Room(f"Room {i}", f"({roomGraph[i][0][0]},{roomGraph[i][0][1]})",i, roomGraph[i][0][0], roomGraph[i][0][1])
         self.roomGrid = []
